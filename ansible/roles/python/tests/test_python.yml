@@ -1,0 +1,24 @@
+---
+- name: Test Python Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: python
+
+  post_tasks:
+    - name: Verify Python installation
+      command: python3 --version
+      register: python_version
+      changed_when: false
+
+    - name: Verify pip installation
+      command: pip3 --version
+      register: pip_version
+      changed_when: false
+
+    - debug:
+        msg: |
+          ✓ Python installed
+          {{ python_version.stdout }}
+          {{ pip_version.stdout }}

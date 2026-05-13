@@ -1,0 +1,41 @@
+---
+- name: Fail when MySQL is enabled without a root password
+  fail:
+    msg: >
+      mysql_root_password must be set before enabling MySQL.
+      Set it in ansible/inventory/group_vars/local.yml.
+      Never commit passwords — use ansible-vault for sensitive values.
+  when: mysql_root_password | length == 0
+
+- name: Install MySQL server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Start MySQL service
+  systemd:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Set MySQL root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    state: present
+  when: mysql_root_password | length > 0
+  no_log: true
+
+- name: Create .my.cnf for root user
+  template:
+    src: my.cnf.j2
+    dest: "{{ ansible_user_dir }}/.my.cnf"
+    mode: "0600"
+    owner: "{{ ansible_user_id }}"
+  when: mysql_root_password | length > 0
+  no_log: true
+
+- name: Verify MySQL installation
+  command: mysql --version
+  register: mysql_version_cmd
+  changed_when: false

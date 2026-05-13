@@ -1,0 +1,5 @@
+---
+# Git role internal variables
+git_packages:
+  - git
+  - git-extras

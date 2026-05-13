@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check git is installed
+      command: git --version
+      changed_when: false
+
+    - name: Check git-extras is installed
+      command: dpkg -s git-extras
+      changed_when: false

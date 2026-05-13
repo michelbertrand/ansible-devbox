@@ -1,0 +1,4 @@
+---
+gradle_version: "8.0"
+# Update when changing gradle_version: https://gradle.org/releases/
+gradle_checksum: "sha256:4159b938ec734a8388ce03f52aa8f3c7ed0d31f5438622545de4f83a89b79788"

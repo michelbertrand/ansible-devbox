@@ -1,0 +1,58 @@
+---
+- name: Get current non-root user
+  set_fact:
+    target_user: "{{ ansible_user_id if ansible_user_id != 'root' else lookup('env', 'SUDO_USER') or 'root' }}"
+
+- name: Resolve target user home directory
+  getent:
+    database: passwd
+    key: "{{ target_user }}"
+
+- name: Set target home directory
+  set_fact:
+    target_home: "{{ ansible_facts.getent_passwd[target_user][4] }}"
+
+- name: Ensure git is installed
+  apt:
+    name: git
+    state: present
+
+- name: Clone kube-ps1 repository
+  git:
+    repo: "{{ kube_ps1_repo }}"
+    dest: "{{ kube_ps1_install_dir }}"
+    version: "{{ kube_ps1_version }}"
+    depth: 1
+    update: false
+
+- name: Set kube-ps1 directory permissions
+  file:
+    path: "{{ kube_ps1_install_dir }}"
+    mode: "0755"
+    recurse: true
+
+- name: Source kube-ps1 in .zshrc
+  lineinfile:
+    path: "{{ target_home }}/.zshrc"
+    regexp: "^source {{ kube_ps1_install_dir }}/kube-ps1.sh"
+    line: "source {{ kube_ps1_install_dir }}/kube-ps1.sh"
+    state: present
+    create: true
+  become_user: "{{ target_user }}"
+
+- name: Configure PROMPT to include kube_ps1
+  lineinfile:
+    path: "{{ target_home }}/.zshrc"
+    regexp: "^PROMPT=.*kube_ps1"
+    line: "PROMPT='$(kube_ps1)'$PROMPT"
+    state: present
+    create: true
+  become_user: "{{ target_user }}"
+  when: kube_ps1_configure_prompt | bool
+
+- name: Verify kube-ps1 script is present
+  stat:
+    path: "{{ kube_ps1_install_dir }}/kube-ps1.sh"
+  register: kube_ps1_script
+  failed_when: not kube_ps1_script.stat.exists
+  changed_when: false

@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check mongod binary is available
+      command: mongod --version
+      changed_when: false
+
+    - name: Check MongoDB service is active
+      command: systemctl is-active mongod
+      changed_when: false

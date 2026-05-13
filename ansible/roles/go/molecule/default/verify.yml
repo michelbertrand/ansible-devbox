@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check go binary symlink exists
+      stat:
+        path: /usr/local/bin/go
+      register: go_bin
+
+    - name: Assert go binary is present
+      assert:
+        that: go_bin.stat.exists
+
+    - name: Run go version
+      command: /usr/local/bin/go version
+      changed_when: false

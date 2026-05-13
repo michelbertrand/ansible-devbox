@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: DevOps Team
+  description: Install Apache Maven build tool
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+  galaxy_tags:
+    - maven
+    - build
+    - java
+
+dependencies:
+  - role: openjdk

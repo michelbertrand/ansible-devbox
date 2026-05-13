@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check MySQL is installed
+      command: mysql --version
+      changed_when: false
+
+    - name: Check MySQL service is active
+      command: systemctl is-active mysql
+      changed_when: false

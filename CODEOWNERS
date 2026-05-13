@@ -1,0 +1,14 @@
+# CODEOWNERS
+
+# Main maintainers
+* @devops-team
+
+# Role-specific maintainers (assign as team grows)
+/ansible/roles/python/ @devops-team
+/ansible/roles/go/ @devops-team
+/ansible/roles/terraform/ @devops-team
+/ansible/roles/kubernetes/ @devops-team
+
+# CI/CD and docs
+/.github/ @devops-team
+/docs/ @devops-team

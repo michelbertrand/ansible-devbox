@@ -1,0 +1,61 @@
+---
+- name: Install Docker (required for Minikube)
+  apt:
+    name: docker.io
+    state: present
+
+- name: Check if Minikube binary exists
+  stat:
+    path: /usr/local/bin/minikube
+  register: minikube_stat
+
+- name: Resolve latest Minikube version from GitHub
+  uri:
+    url: https://api.github.com/repos/kubernetes/minikube/releases/latest
+    return_content: true
+  register: minikube_latest_release
+  when: minikube_version == "latest" and not minikube_stat.stat.exists
+  retries: 3
+  delay: 5
+  until: minikube_latest_release.status == 200
+  check_mode: no
+
+- name: Set minikube_actual_version (latest)
+  set_fact:
+    minikube_actual_version: "{{ minikube_latest_release.get('json', {}).get('tag_name', '') | regex_replace('^v', '') }}"
+  when: minikube_version == "latest" and not minikube_stat.stat.exists
+
+- name: Set minikube_actual_version (pinned)
+  set_fact:
+    minikube_actual_version: "{{ minikube_version }}"
+  when: minikube_version != "latest" and not minikube_stat.stat.exists
+
+- name: Fetch Minikube checksum
+  uri:
+    url: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}.sha256"
+    return_content: true
+  register: minikube_checksum_file
+  when: not minikube_stat.stat.exists and minikube_actual_version is defined
+  retries: 3
+  delay: 5
+  until: minikube_checksum_file.status == 200
+  check_mode: no
+
+- name: Download Minikube binary
+  get_url:
+    url: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}"
+    dest: /usr/local/bin/minikube
+    mode: "0755"
+    checksum: "sha256:{{ minikube_checksum_file.get('content', '') | trim }}"
+  when: not minikube_stat.stat.exists and minikube_actual_version is defined
+
+- name: Verify Minikube installation
+  command: minikube version
+  register: minikube_version_cmd
+  changed_when: false
+
+- name: Add user to docker group (for Minikube)
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: true

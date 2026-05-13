@@ -1,0 +1,4 @@
+---
+# Known Sublime HQ GPG fingerprint — update if the key is rotated.
+# Source: https://www.sublimetext.com/docs/linux_repositories.html
+sublime_text_gpg_fingerprint: "3048 4BDB 5102 1C46 DA5B  E7A6 8BE5 0FA0 3DA7 8F4A"

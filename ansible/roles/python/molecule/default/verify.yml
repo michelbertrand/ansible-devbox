@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check python3 is installed
+      command: python3 --version
+      changed_when: false
+
+    - name: Check pip3 is installed
+      command: pip3 --version
+      changed_when: false

@@ -1,0 +1,10 @@
+---
+git_user_name: ""
+git_user_email: ""
+git_default_branch: "main"
+git_pull_rebase: true
+git_aliases:
+  st: status
+  co: checkout
+  br: branch
+  lg: "log --oneline --graph --decorate --all"

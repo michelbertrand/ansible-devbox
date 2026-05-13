@@ -1,0 +1,16 @@
+---
+# Local machine-specific overrides (inventory group 'local')
+
+# Uncomment to enable databases
+# enable_mysql: true
+# enable_mongodb: true
+
+# Override tool versions as needed
+# python_version: "3.11"
+# go_version: "1.22.0"
+
+# Custom repository mirrors (if needed)
+# apt_repo_url: "http://archive.ubuntu.com/ubuntu/"
+
+# Additional package installation options
+# force_reinstall: false

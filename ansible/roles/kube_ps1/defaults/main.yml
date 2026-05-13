@@ -1,0 +1,4 @@
+---
+kube_ps1_version: "v0.7.4"
+kube_ps1_install_dir: "/opt/kube-ps1"
+kube_ps1_configure_prompt: false

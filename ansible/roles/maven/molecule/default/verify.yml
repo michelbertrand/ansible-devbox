@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check mvn binary exists
+      stat:
+        path: /usr/bin/mvn
+      register: mvn_bin
+
+    - name: Assert mvn is installed
+      assert:
+        that: mvn_bin.stat.exists
+
+    - name: Run mvn version
+      command: mvn -version
+      changed_when: false

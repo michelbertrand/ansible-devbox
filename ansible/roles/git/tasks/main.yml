@@ -1,0 +1,44 @@
+---
+- name: Install git packages
+  apt:
+    name: "{{ git_packages }}"
+    state: present
+    update_cache: true
+
+- name: Set git global user name
+  community.general.git_config:
+    name: user.name
+    scope: global
+    value: "{{ git_user_name }}"
+  when: git_user_name | length > 0
+  become: false
+
+- name: Set git global user email
+  community.general.git_config:
+    name: user.email
+    scope: global
+    value: "{{ git_user_email }}"
+  when: git_user_email | length > 0
+  become: false
+
+- name: Set default branch name
+  community.general.git_config:
+    name: init.defaultBranch
+    scope: global
+    value: "{{ git_default_branch }}"
+  become: false
+
+- name: Set pull rebase preference
+  community.general.git_config:
+    name: pull.rebase
+    scope: global
+    value: "{{ git_pull_rebase | lower }}"
+  become: false
+
+- name: Set git aliases
+  community.general.git_config:
+    name: "alias.{{ item.key }}"
+    scope: global
+    value: "{{ item.value }}"
+  loop: "{{ git_aliases | dict2items }}"
+  become: false

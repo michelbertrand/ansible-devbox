@@ -1,0 +1,6 @@
+---
+docker_version: "latest"
+docker_compose_version: "latest"
+docker_enable_experimental: false
+docker_daemon_options: {}
+docker_apt_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"

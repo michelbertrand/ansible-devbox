@@ -1,0 +1,81 @@
+---
+- name: Linux Local Development Environment
+  hosts: local
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Display provisioning info
+      debug:
+        msg: "Provisioning {{ ansible_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
+
+    - name: Remove conflicting Sublime Text apt sources (legacy install cleanup)
+      shell: |
+        find /etc/apt/sources.list.d/ \( -name "*.list" -o -name "*.sources" \) \
+          -exec grep -l "download.sublimetext.com" {} \; \
+          | xargs -r rm -f
+        sed -i '/download.sublimetext.com/d' /etc/apt/sources.list
+        rm -f /usr/share/keyrings/sublimehq.gpg
+      changed_when: false
+      check_mode: false
+
+    - name: Update apt cache
+      apt:
+        cache_valid_time: 3600
+        update_cache: true
+
+  roles:
+    - role: git
+      tags: [git, vcs]
+
+    - role: sublime_text
+      tags: [sublime_text, editors]
+
+    - role: terminator
+      tags: [terminator, terminals]
+
+    - role: ohmyzsh
+      tags: [ohmyzsh, shells]
+
+    - role: python
+      tags: [python, languages]
+
+    - role: go
+      tags: [go, languages]
+
+    - role: openjdk
+      tags: [openjdk, jvm]
+
+    - role: maven
+      tags: [maven, build-tools, jvm]
+
+    - role: gradle
+      tags: [gradle, build-tools, jvm]
+
+    - role: terraform
+      tags: [terraform, infrastructure]
+
+    - role: kubectl
+      tags: [kubectl, kubernetes]
+
+    - role: docker
+      tags: [docker, containers]
+
+    - role: minikube
+      tags: [minikube, kubernetes]
+
+    - role: kube_ps1
+      tags: [kube_ps1, kubernetes]
+
+    - role: mysql
+      when: enable_mysql | default(false)
+      tags: [mysql, databases]
+
+    - role: mongodb
+      when: enable_mongodb | default(false)
+      tags: [mongodb, databases]
+
+  post_tasks:
+    - name: Summary
+      debug:
+        msg: "✓ Provisioning complete. Run 'make apply' again to verify idempotency."

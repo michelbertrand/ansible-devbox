@@ -1,0 +1,52 @@
+---
+- name: Determine kubectl version when set to 'latest'
+  shell: curl -s https://dl.k8s.io/release/stable.txt | tr -d '\n'
+  register: kubectl_version_file
+  when: kubectl_version == "latest"
+  retries: 3
+  delay: 5
+  until: kubectl_version_file.stdout | length > 0
+  changed_when: false
+  check_mode: no
+
+- name: Set kubectl_actual_version to latest
+  set_fact:
+    kubectl_actual_version: "{{ kubectl_version_file.stdout }}"
+  when: kubectl_version == "latest"
+
+- name: Set kubectl to requested version
+  set_fact:
+    kubectl_actual_version: "{{ kubectl_version }}"
+  when: kubectl_version != "latest"
+
+- name: Check existing kubectl binary
+  stat:
+    path: /usr/local/bin/kubectl
+  register: kubectl_stat
+
+- name: Fetch kubectl checksum
+  uri:
+    url: "https://dl.k8s.io/release/{{ kubectl_actual_version }}/bin/linux/{{ kubectl_arch }}/kubectl.sha256"
+    return_content: true
+  register: kubectl_checksum_file
+  when: not kubectl_stat.stat.exists
+  retries: 3
+  delay: 5
+  until: kubectl_checksum_file.status == 200
+  check_mode: no
+
+- name: Download kubectl binary
+  get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_actual_version }}/bin/linux/{{ kubectl_arch }}/kubectl"
+    dest: "/usr/local/bin/kubectl"
+    mode: "0755"
+    checksum: "sha256:{{ kubectl_checksum_file.content | default('') | trim }}"
+  when: not kubectl_stat.stat.exists
+  register: kubectl_download
+  retries: 3
+  delay: 5
+
+- name: Verify kubectl installation
+  command: kubectl version --client
+  register: kubectl_version_cmd
+  changed_when: false

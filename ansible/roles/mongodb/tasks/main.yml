@@ -1,0 +1,40 @@
+---
+- name: Create apt keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download MongoDB GPG key
+  get_url:
+    url: "https://www.mongodb.org/static/pgp/server-6.0.asc"
+    dest: /etc/apt/keyrings/mongodb.asc
+    mode: '0644'
+    force: false
+  retries: 3
+  delay: 5
+
+- name: Add MongoDB repository
+  apt_repository:
+    repo: "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.asc] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/6.0 multiverse"
+    state: present
+
+- name: Install MongoDB
+  apt:
+    name:
+      - mongodb-org
+      - mongodb-org-server
+      - mongodb-org-shell
+    state: present
+    update_cache: true
+
+- name: Start MongoDB service
+  systemd:
+    name: mongod
+    state: started
+    enabled: true
+
+- name: Verify MongoDB installation
+  command: mongod --version
+  register: mongodb_version_cmd
+  changed_when: false

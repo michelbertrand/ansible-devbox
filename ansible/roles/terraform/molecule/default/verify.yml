@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check terraform binary exists
+      stat:
+        path: /usr/local/bin/terraform
+      register: tf_bin
+
+    - name: Assert terraform is present
+      assert:
+        that: tf_bin.stat.exists
+
+    - name: Run terraform version
+      command: terraform version
+      changed_when: false

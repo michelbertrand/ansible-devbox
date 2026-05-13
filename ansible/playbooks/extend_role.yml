@@ -1,0 +1,76 @@
+---
+- name: Example - Extending Existing Roles
+  hosts: local
+  become: true
+  gather_facts: true
+
+  vars:
+    # Example: Override Python version
+    python_version: "3.11"
+
+    # Example: Add extra Python packages
+    pip_extra_packages:
+      - jupyter
+      - numpy
+      - pandas
+      - django
+
+    # Example: Add extra Go packages
+    go_extra_packages:
+      - github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+  pre_tasks:
+    - name: Display custom configuration
+      debug:
+        msg: |
+          Custom Configuration:
+          - Python version: {{ python_version }}
+          - Extra pip packages: {{ pip_extra_packages | join(', ') }}
+          - Extra Go packages: {{ go_extra_packages | join(', ') }}
+
+  roles:
+    - role: python
+      tags: [python]
+
+    - role: go
+      tags: [go]
+
+  tasks:
+    - name: Install extra pip packages
+      pip:
+        name: "{{ pip_extra_packages }}"
+        state: present
+        executable: /usr/bin/pip3
+      tags: [python]
+
+    - name: Install extra Go packages (using go install)
+      shell: |
+        source ~/.bashrc
+        go install {{ item }}
+      environment:
+        GOPATH: "{{ ansible_user_dir }}/.go"
+        PATH: "{{ ansible_user_dir }}/.go/bin:{{ ansible_env.PATH }}"
+      loop: "{{ go_extra_packages }}"
+      register: go_install
+      changed_when: "'downloaded' in go_install.stdout or 'Entering' in go_install.stdout"
+      tags: [go]
+
+  post_tasks:
+    - name: Verify installations
+      block:
+        - name: Python version
+          shell: python3 --version
+          register: py_version
+          changed_when: false
+
+        - name: Go version
+          shell: go version
+          register: go_version
+          changed_when: false
+
+        - debug:
+            msg: |
+              Verification:
+              {{ py_version.stdout }}
+              {{ go_version.stdout }}
+      tags: [always]

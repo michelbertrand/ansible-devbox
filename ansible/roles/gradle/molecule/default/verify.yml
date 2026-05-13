@@ -1,0 +1,22 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check gradle symlink exists
+      stat:
+        path: /opt/gradle
+      register: gradle_link
+
+    - name: Assert gradle symlink is present
+      assert:
+        that: gradle_link.stat.islnk
+
+    - name: Check gradle binary exists
+      stat:
+        path: /opt/gradle/bin/gradle
+      register: gradle_bin
+
+    - name: Assert gradle binary is present
+      assert:
+        that: gradle_bin.stat.exists

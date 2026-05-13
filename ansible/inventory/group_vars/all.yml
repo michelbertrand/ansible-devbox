@@ -1,0 +1,27 @@
+---
+# Global defaults for all inventory groups
+
+# Database configuration (disabled by default)
+enable_mysql: false
+enable_mongodb: false
+
+# Tool versions (can be overridden in group_vars/local.yml or host inventory)
+python_version: "3.10"
+go_version: "1.26.3"
+go_checksum: "sha256:2b2cfc7148493da5e73981bffbf3353af381d5f93e789c82c79aff64962eb556"
+openjdk_version: "17"
+terraform_version: "1.5.0"
+kubectl_version: "latest"
+minikube_version: "latest"
+maven_version: "3.9.0"
+gradle_version: "8.0"
+
+# Shell configuration
+ohmyzsh_theme: "robbyrussell"
+ohmyzsh_plugins:
+  - git
+  - docker
+  - kubectl
+
+# Package manager settings
+apt_cache_valid_time: 3600

@@ -1,0 +1,69 @@
+---
+- name: Check if Go is already installed
+  stat:
+    path: /usr/local/go
+  register: go_stat
+
+- name: Map architecture to Go naming convention
+  set_fact:
+    go_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' if ansible_facts['architecture'] == 'aarch64' else ansible_facts['architecture'] }}"
+
+- name: Download Go
+  get_url:
+    url: "https://go.dev/dl/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+    dest: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+    checksum: "{{ go_checksum }}"
+  register: go_download
+  when: not go_stat.stat.exists
+  retries: 3
+  delay: 5
+
+- name: Remove existing Go installation
+  file:
+    path: "/usr/local/go"
+    state: absent
+  when: go_download is changed
+
+- name: Check if tar file exists
+  stat:
+    path: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+  register: go_tar
+
+- name: Extract Go
+  unarchive:
+    src: "/tmp/go{{ go_version }}.linux-{{ go_arch }}.tar.gz"
+    dest: "/usr/local/"
+    remote_src: true
+  when: go_tar.stat.exists and (go_download is changed or not go_stat.stat.exists)
+
+- name: Create symbolic link for go
+  file:
+    src: /usr/local/go/bin/go
+    dest: /usr/local/bin/go
+    state: link
+    force: true
+
+- name: Create symbolic link for gofmt
+  file:
+    src: /usr/local/go/bin/gofmt
+    dest: /usr/local/bin/gofmt
+    state: link
+    force: true
+
+- name: Set Go environment in profile
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: "export PATH=$PATH:/usr/local/go/bin:~/go/bin"
+    regexp: "^export PATH.*go/bin"
+    state: present
+    create: true
+  become: false
+
+- name: Set Go environment in zsh profile
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.zshrc"
+    line: "export PATH=$PATH:/usr/local/go/bin:~/go/bin"
+    regexp: "^export PATH.*go/bin"
+    state: present
+    create: true
+  become: false

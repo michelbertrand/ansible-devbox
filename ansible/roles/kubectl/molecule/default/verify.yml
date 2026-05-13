@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check kubectl binary exists
+      stat:
+        path: /usr/local/bin/kubectl
+      register: kubectl_bin
+
+    - name: Assert kubectl is present
+      assert:
+        that: kubectl_bin.stat.exists
+
+    - name: Run kubectl version --client
+      command: kubectl version --client
+      changed_when: false

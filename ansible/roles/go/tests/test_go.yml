@@ -1,0 +1,16 @@
+---
+- name: Test Go Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: go
+
+  post_tasks:
+    - name: Verify Go installation
+      command: go version
+      register: go_version
+      changed_when: false
+
+    - debug:
+        msg: "✓ Go installed: {{ go_version.stdout }}"

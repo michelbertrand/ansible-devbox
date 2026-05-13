@@ -1,0 +1,65 @@
+---
+- name: Install zsh
+  apt:
+    name: zsh
+    state: present
+
+- name: Get current non-root user
+  set_fact:
+    target_user: "{{ ansible_user_id if ansible_user_id != 'root' else lookup('env', 'SUDO_USER') or 'root' }}"
+
+- name: Resolve target user home directory
+  getent:
+    database: passwd
+    key: "{{ target_user }}"
+
+- name: Set target home directory
+  set_fact:
+    target_home: "{{ ansible_facts.getent_passwd[target_user][4] }}"
+
+- name: Check if Oh My Zsh is installed
+  stat:
+    path: "{{ target_home }}/.oh-my-zsh"
+  register: ohmyzsh_stat
+
+- name: Clone Oh My Zsh repository
+  git:
+    repo: "https://github.com/ohmyzsh/ohmyzsh.git"
+    dest: "{{ target_home }}/.oh-my-zsh"
+    depth: 1
+    update: false
+  become_user: "{{ target_user }}"
+  when: not ohmyzsh_stat.stat.exists
+
+- name: Create .zshrc from Oh My Zsh template
+  copy:
+    src: "{{ target_home }}/.oh-my-zsh/templates/zshrc.zsh-template"
+    dest: "{{ target_home }}/.zshrc"
+    remote_src: true
+    owner: "{{ target_user }}"
+    mode: "0644"
+    force: false
+  when: not ohmyzsh_stat.stat.exists
+
+- name: Set zsh as default shell
+  user:
+    name: "{{ target_user }}"
+    shell: /bin/zsh
+
+- name: Configure Oh My Zsh theme
+  lineinfile:
+    path: "{{ target_home }}/.zshrc"
+    regexp: "^ZSH_THEME="
+    line: "ZSH_THEME=\"{{ ohmyzsh_theme }}\""
+    state: present
+    create: true
+  become_user: "{{ target_user }}"
+
+- name: Enable Oh My Zsh plugins
+  lineinfile:
+    path: "{{ target_home }}/.zshrc"
+    regexp: "^plugins="
+    line: "plugins=({{ ohmyzsh_plugins | join(' ') }})"
+    state: present
+    create: true
+  become_user: "{{ target_user }}"

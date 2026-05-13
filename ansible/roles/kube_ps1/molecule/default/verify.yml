@@ -1,0 +1,13 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check kube-ps1 script exists
+      stat:
+        path: /opt/kube-ps1/kube-ps1.sh
+      register: kube_ps1_script
+
+    - name: Assert kube-ps1 script is present
+      assert:
+        that: kube_ps1_script.stat.exists

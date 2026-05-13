@@ -1,0 +1,25 @@
+---
+- name: Test Git Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: git
+
+  post_tasks:
+    - name: Verify git installation
+      command: git --version
+      register: git_version
+      changed_when: false
+
+    - name: Verify default branch config
+      command: git config --global init.defaultBranch
+      register: git_default_branch_result
+      changed_when: false
+      become: false
+
+    - debug:
+        msg: |
+          ✓ Git installed
+          {{ git_version.stdout }}
+          default branch: {{ git_default_branch_result.stdout }}

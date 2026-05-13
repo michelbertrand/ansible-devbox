@@ -1,0 +1,62 @@
+---
+- name: Check if Gradle is already installed
+  stat:
+    path: "/opt/gradle-{{ gradle_version }}"
+  register: gradle_stat
+
+- name: Download Gradle
+  get_url:
+    url: "https://services.gradle.org/distributions/gradle-{{ gradle_version }}-bin.zip"
+    dest: "/tmp/gradle-{{ gradle_version }}-bin.zip"
+    checksum: "{{ gradle_checksum }}"
+  register: gradle_download
+  when: not gradle_stat.stat.exists
+  retries: 3
+  delay: 5
+
+- name: Install unzip if not present
+  apt:
+    name: unzip
+    state: present
+
+- name: Check if zip file exists
+  stat:
+    path: "/tmp/gradle-{{ gradle_version }}-bin.zip"
+  register: gradle_zip
+
+- name: Extract Gradle
+  unarchive:
+    src: "/tmp/gradle-{{ gradle_version }}-bin.zip"
+    dest: "/opt/"
+    remote_src: true
+  when: gradle_zip.stat.exists and (gradle_download is changed or not gradle_stat.stat.exists)
+
+- name: Create Gradle symlink
+  file:
+    src: "/opt/gradle-{{ gradle_version }}"
+    dest: "/opt/gradle"
+    state: link
+    force: true
+
+- name: Set Gradle PATH
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.bashrc"
+    line: "export PATH=$PATH:/opt/gradle/bin"
+    regexp: "^export PATH.*gradle/bin"
+    state: present
+    create: true
+  become: false
+
+- name: Set Gradle PATH in zsh
+  lineinfile:
+    path: "{{ ansible_user_dir }}/.zshrc"
+    line: "export PATH=$PATH:/opt/gradle/bin"
+    regexp: "^export PATH.*gradle/bin"
+    state: present
+    create: true
+  become: false
+
+- name: Verify Gradle installation
+  command: /opt/gradle/bin/gradle --version
+  register: gradle_version_cmd
+  changed_when: false

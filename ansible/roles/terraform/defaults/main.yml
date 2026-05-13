@@ -1,0 +1,6 @@
+---
+terraform_version: "1.5.0"
+# Update both entries when changing terraform_version
+terraform_checksums:
+  amd64: "sha256:9ae1bcfef088e9aaabeaf6fdc6cce01187dc4936f1564899ee6fa6baec5ad19c"
+  arm64: "sha256:7d0bb120dc90dc05011f7a6c7c027f2ac1b13c0d5721b8c935f2f440e539a968"

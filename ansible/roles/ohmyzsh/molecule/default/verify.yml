@@ -1,0 +1,26 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check zsh is installed
+      command: zsh --version
+      changed_when: false
+
+    - name: Check Oh My Zsh directory exists
+      stat:
+        path: "{{ ansible_user_dir }}/.oh-my-zsh"
+      register: ohmyzsh_dir
+
+    - name: Assert Oh My Zsh is installed
+      assert:
+        that: ohmyzsh_dir.stat.isdir
+
+    - name: Check .zshrc exists
+      stat:
+        path: "{{ ansible_user_dir }}/.zshrc"
+      register: zshrc
+
+    - name: Assert .zshrc is present
+      assert:
+        that: zshrc.stat.exists

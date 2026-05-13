@@ -1,0 +1,4 @@
+---
+# Sublime Text role defaults
+sublime_text_version: "present"  # Can be set to specific version
+sublime_text_packages: []        # Additional packages to install

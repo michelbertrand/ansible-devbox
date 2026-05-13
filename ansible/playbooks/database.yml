@@ -1,0 +1,58 @@
+---
+- name: Database Provisioning Examples
+  hosts: local
+  become: true
+  gather_facts: true
+
+  vars_prompt:
+    - name: mysql_root_password
+      prompt: "MySQL root password (press Enter to skip MySQL)"
+      private: true
+      when: enable_mysql | default(false)
+
+    - name: mongodb_admin_password
+      prompt: "MongoDB admin password (press Enter to skip MongoDB)"
+      private: true
+      when: enable_mongodb | default(false)
+
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        cache_valid_time: 3600
+        update_cache: true
+
+  roles:
+    - role: mysql
+      when: enable_mysql | default(false)
+      vars:
+        mysql_root_password: "{{ mysql_root_password }}"
+      tags: [mysql, databases]
+
+    - role: mongodb
+      when: enable_mongodb | default(false)
+      vars:
+        mongodb_admin_password: "{{ mongodb_admin_password }}"
+      tags: [mongodb, databases]
+
+  post_tasks:
+    - name: MySQL Status (if enabled)
+      block:
+        - name: Get MySQL version
+          shell: mysql --version
+          register: mysql_version
+          changed_when: false
+
+        - debug:
+            msg: "{{ mysql_version.stdout }}"
+      when: enable_mysql | default(false)
+
+    - name: MongoDB Status (if enabled)
+      block:
+        - name: Get MongoDB version
+          shell: mongod --version | head -n 1
+          register: mongodb_version
+          changed_when: false
+
+        - debug:
+            msg: "{{ mongodb_version.stdout }}"
+      when: enable_mongodb | default(false)

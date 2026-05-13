@@ -1,0 +1,41 @@
+---
+- name: Map architecture to Terraform naming convention
+  set_fact:
+    terraform_arch: "{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' if ansible_facts['architecture'] == 'aarch64' else ansible_facts['architecture'] }}"
+
+- name: Check if Terraform is already installed
+  stat:
+    path: /usr/local/bin/terraform
+  register: terraform_stat
+
+- name: Download Terraform
+  get_url:
+    url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_{{ terraform_arch }}.zip"
+    dest: "/tmp/terraform_{{ terraform_version }}_linux_{{ terraform_arch }}.zip"
+    checksum: "{{ terraform_checksums[terraform_arch] }}"
+  register: tf_download
+  when: not terraform_stat.stat.exists
+  retries: 3
+  delay: 5
+
+- name: Install unzip if not present
+  apt:
+    name: unzip
+    state: present
+
+- name: Check if zip file exists
+  stat:
+    path: "/tmp/terraform_{{ terraform_version }}_linux_{{ terraform_arch }}.zip"
+  register: terraform_zip
+
+- name: Extract Terraform
+  unarchive:
+    src: "/tmp/terraform_{{ terraform_version }}_linux_{{ terraform_arch }}.zip"
+    dest: "/usr/local/bin/"
+    remote_src: true
+  when: terraform_zip.stat.exists and (tf_download is changed or not terraform_stat.stat.exists)
+
+- name: Verify Terraform installation
+  command: terraform version
+  register: terraform_version_cmd
+  changed_when: false

@@ -1,0 +1,5 @@
+---
+- name: Install Terminator terminal emulator
+  apt:
+    name: terminator
+    state: present

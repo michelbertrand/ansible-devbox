@@ -1,0 +1,16 @@
+---
+- name: Test Sublime Text Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: sublime_text
+
+  post_tasks:
+    - name: Verify Sublime Text installation
+      command: which subl
+      register: subl_path
+      changed_when: false
+
+    - debug:
+        msg: "✓ Sublime Text installed at {{ subl_path.stdout }}"
