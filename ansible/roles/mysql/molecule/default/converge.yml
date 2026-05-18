@@ -3,7 +3,7 @@
   hosts: all
   become: true
   vars:
-    mysql_root_password: "Molecule_Test_Pw1!"
+    mysql_root_password: "MOLECULE_TEST_ONLY_NOT_A_REAL_PASSWORD"
   pre_tasks:
     - name: Update apt cache
       apt:
