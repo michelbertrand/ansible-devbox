@@ -11,6 +11,7 @@
     dest: /etc/apt/keyrings/mongodb.asc
     mode: '0644'
     force: false
+    checksum: "{{ mongodb_gpg_checksum }}"
   retries: 3
   delay: 5
 

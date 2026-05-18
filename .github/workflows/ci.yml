@@ -64,7 +64,7 @@ jobs:
           ansible-playbook ansible/playbooks/site.yml \
             --inventory ansible/inventory/hosts.ini \
             --check
-        continue-on-error: true
+        continue-on-error: false
 
   molecule:
     runs-on: ubuntu-latest
