@@ -1,5 +1,5 @@
 ---
 - name: Install Terminator terminal emulator
-  apt:
+  ansible.builtin.apt:
     name: terminator
     state: present

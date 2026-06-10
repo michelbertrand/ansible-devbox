@@ -8,9 +8,10 @@
 
   post_tasks:
     - name: Verify Go installation
-      command: go version
+      ansible.builtin.command: go version
       register: go_version
       changed_when: false
 
-    - debug:
-        msg: "✓ Go installed: {{ go_version.stdout }}"
+    - name: Display Go version
+      ansible.builtin.debug:
+        msg: "Go installed: {{ go_version.stdout }}"

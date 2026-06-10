@@ -4,9 +4,9 @@
   gather_facts: false
   tasks:
     - name: Check mongod binary is available
-      command: mongod --version
+      ansible.builtin.command: mongod --version
       changed_when: false
 
     - name: Check MongoDB service is active
-      command: systemctl is-active mongod
+      ansible.builtin.command: systemctl is-active mongod
       changed_when: false

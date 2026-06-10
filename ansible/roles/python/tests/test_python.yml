@@ -8,17 +8,18 @@
 
   post_tasks:
     - name: Verify Python installation
-      command: python3 --version
+      ansible.builtin.command: python3 --version
       register: python_version
       changed_when: false
 
     - name: Verify pip installation
-      command: pip3 --version
+      ansible.builtin.command: pip3 --version
       register: pip_version
       changed_when: false
 
-    - debug:
+    - name: Display Python version info
+      ansible.builtin.debug:
         msg: |
-          ✓ Python installed
+          Python installed
           {{ python_version.stdout }}
           {{ pip_version.stdout }}

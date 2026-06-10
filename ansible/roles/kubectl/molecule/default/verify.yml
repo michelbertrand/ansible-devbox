@@ -4,14 +4,14 @@
   gather_facts: false
   tasks:
     - name: Check kubectl binary exists
-      stat:
+      ansible.builtin.stat:
         path: /usr/local/bin/kubectl
       register: kubectl_bin
 
     - name: Assert kubectl is present
-      assert:
+      ansible.builtin.assert:
         that: kubectl_bin.stat.exists
 
     - name: Run kubectl version --client
-      command: kubectl version --client
+      ansible.builtin.command: kubectl version --client
       changed_when: false

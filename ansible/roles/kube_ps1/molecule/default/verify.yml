@@ -4,10 +4,10 @@
   gather_facts: false
   tasks:
     - name: Check kube-ps1 script exists
-      stat:
+      ansible.builtin.stat:
         path: /opt/kube-ps1/kube-ps1.sh
       register: kube_ps1_script
 
     - name: Assert kube-ps1 script is present
-      assert:
+      ansible.builtin.assert:
         that: kube_ps1_script.stat.exists

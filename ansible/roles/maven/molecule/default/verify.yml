@@ -4,14 +4,14 @@
   gather_facts: false
   tasks:
     - name: Check mvn binary exists
-      stat:
+      ansible.builtin.stat:
         path: /usr/bin/mvn
       register: mvn_bin
 
     - name: Assert mvn is installed
-      assert:
+      ansible.builtin.assert:
         that: mvn_bin.stat.exists
 
     - name: Run mvn version
-      command: mvn -version
+      ansible.builtin.command: mvn -version
       changed_when: false

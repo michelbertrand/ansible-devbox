@@ -8,16 +8,14 @@
     - name: mysql_root_password
       prompt: "MySQL root password (press Enter to skip MySQL)"
       private: true
-      when: enable_mysql | default(false)
 
     - name: mongodb_admin_password
       prompt: "MongoDB admin password (press Enter to skip MongoDB)"
       private: true
-      when: enable_mongodb | default(false)
 
   pre_tasks:
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         cache_valid_time: 3600
         update_cache: true
 
@@ -36,23 +34,27 @@
 
   post_tasks:
     - name: MySQL Status (if enabled)
+      when: enable_mysql | default(false)
       block:
         - name: Get MySQL version
-          shell: mysql --version
+          ansible.builtin.command: mysql --version
           register: mysql_version
           changed_when: false
 
-        - debug:
+        - name: Display MySQL version
+          ansible.builtin.debug:
             msg: "{{ mysql_version.stdout }}"
-      when: enable_mysql | default(false)
 
     - name: MongoDB Status (if enabled)
+      when: enable_mongodb | default(false)
       block:
         - name: Get MongoDB version
-          shell: mongod --version | head -n 1
+          ansible.builtin.shell: |
+            set -o pipefail
+            mongod --version | head -n 1
           register: mongodb_version
           changed_when: false
 
-        - debug:
+        - name: Display MongoDB version
+          ansible.builtin.debug:
             msg: "{{ mongodb_version.stdout }}"
-      when: enable_mongodb | default(false)

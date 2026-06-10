@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - name: Check java is installed
-      command: java -version
+      ansible.builtin.command: java -version
       changed_when: false
