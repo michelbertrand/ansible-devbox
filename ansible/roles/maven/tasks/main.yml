@@ -1,10 +1,10 @@
 ---
 - name: Install Maven
-  apt:
+  ansible.builtin.apt:
     name: maven
     state: present
 
 - name: Verify Maven installation
-  command: mvn -version
+  ansible.builtin.command: mvn -version
   register: maven_version
   changed_when: false

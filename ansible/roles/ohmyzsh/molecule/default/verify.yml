@@ -4,23 +4,23 @@
   gather_facts: true
   tasks:
     - name: Check zsh is installed
-      command: zsh --version
+      ansible.builtin.command: zsh --version
       changed_when: false
 
     - name: Check Oh My Zsh directory exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ ansible_user_dir }}/.oh-my-zsh"
       register: ohmyzsh_dir
 
     - name: Assert Oh My Zsh is installed
-      assert:
+      ansible.builtin.assert:
         that: ohmyzsh_dir.stat.isdir
 
     - name: Check .zshrc exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ ansible_user_dir }}/.zshrc"
       register: zshrc
 
     - name: Assert .zshrc is present
-      assert:
+      ansible.builtin.assert:
         that: zshrc.stat.exists

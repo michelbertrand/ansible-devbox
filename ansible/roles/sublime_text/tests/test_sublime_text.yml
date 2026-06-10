@@ -8,9 +8,10 @@
 
   post_tasks:
     - name: Verify Sublime Text installation
-      command: which subl
+      ansible.builtin.command: which subl
       register: subl_path
       changed_when: false
 
-    - debug:
-        msg: "✓ Sublime Text installed at {{ subl_path.stdout }}"
+    - name: Display Sublime Text install path
+      ansible.builtin.debug:
+        msg: "Sublime Text installed at {{ subl_path.stdout }}"

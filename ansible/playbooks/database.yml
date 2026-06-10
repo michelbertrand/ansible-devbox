@@ -34,6 +34,7 @@
 
   post_tasks:
     - name: MySQL Status (if enabled)
+      when: enable_mysql | default(false)
       block:
         - name: Get MySQL version
           ansible.builtin.command: mysql --version
@@ -43,16 +44,17 @@
         - name: Display MySQL version
           ansible.builtin.debug:
             msg: "{{ mysql_version.stdout }}"
-      when: enable_mysql | default(false)
 
     - name: MongoDB Status (if enabled)
+      when: enable_mongodb | default(false)
       block:
         - name: Get MongoDB version
-          ansible.builtin.shell: mongod --version | head -n 1
+          ansible.builtin.shell: |
+            set -o pipefail
+            mongod --version | head -n 1
           register: mongodb_version
           changed_when: false
 
         - name: Display MongoDB version
           ansible.builtin.debug:
             msg: "{{ mongodb_version.stdout }}"
-      when: enable_mongodb | default(false)

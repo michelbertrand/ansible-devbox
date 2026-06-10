@@ -4,14 +4,14 @@
   gather_facts: false
   tasks:
     - name: Check minikube binary exists
-      stat:
+      ansible.builtin.stat:
         path: /usr/local/bin/minikube
       register: minikube_bin
 
     - name: Assert minikube is present
-      assert:
+      ansible.builtin.assert:
         that: minikube_bin.stat.exists
 
     - name: Run minikube version
-      command: minikube version
+      ansible.builtin.command: minikube version
       changed_when: false

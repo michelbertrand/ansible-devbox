@@ -4,6 +4,6 @@
   become: true
   tasks:
     - name: Install PyMySQL (required by community.mysql collection)
-      pip:
+      ansible.builtin.pip:
         name: PyMySQL
         state: present

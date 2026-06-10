@@ -4,10 +4,10 @@
   gather_facts: false
   tasks:
     - name: Check docker binary is available
-      command: docker --version
+      ansible.builtin.command: docker --version
       changed_when: false
 
     - name: Check docker compose plugin is available
-      command: docker compose version
+      ansible.builtin.command: docker compose version
       changed_when: false
-      ignore_errors: true
+      failed_when: false
