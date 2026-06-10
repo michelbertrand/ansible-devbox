@@ -7,6 +7,9 @@
       ansible.builtin.command: mongod --version
       changed_when: false
 
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
     - name: Check MongoDB service is active
-      ansible.builtin.command: systemctl is-active mongod
-      changed_when: false
+      ansible.builtin.assert:
+        that: ansible_facts.services['mongod.service'].state == 'running'

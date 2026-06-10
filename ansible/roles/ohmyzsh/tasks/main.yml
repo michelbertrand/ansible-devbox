@@ -27,6 +27,7 @@
     repo: "https://github.com/ohmyzsh/ohmyzsh.git"
     dest: "{{ target_home }}/.oh-my-zsh"
     depth: 1
+    version: master
     update: false
   become: true
   become_user: "{{ target_user }}"

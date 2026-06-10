@@ -22,7 +22,7 @@
   retries: 3
   delay: 5
 
-- name: Remove existing Go installation
+- name: Remove existing Go installation  # noqa: no-handler
   ansible.builtin.file:
     path: "/usr/local/go"
     state: absent

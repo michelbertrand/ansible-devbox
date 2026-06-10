@@ -3,9 +3,14 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Check git is installed
-      ansible.builtin.command: git --version
-      changed_when: false
+    - name: Check git binary exists
+      ansible.builtin.stat:
+        path: /usr/bin/git
+      register: git_bin
+
+    - name: Assert git is installed
+      ansible.builtin.assert:
+        that: git_bin.stat.exists
 
     - name: Check git-extras is installed
       ansible.builtin.command: dpkg -s git-extras

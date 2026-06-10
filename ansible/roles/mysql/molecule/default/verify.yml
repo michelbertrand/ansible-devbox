@@ -7,6 +7,9 @@
       ansible.builtin.command: mysql --version
       changed_when: false
 
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
     - name: Check MySQL service is active
-      ansible.builtin.command: systemctl is-active mysql
-      changed_when: false
+      ansible.builtin.assert:
+        that: ansible_facts.services['mysql.service'].state == 'running'

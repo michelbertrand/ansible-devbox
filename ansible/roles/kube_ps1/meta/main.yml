@@ -11,7 +11,7 @@ galaxy_info:
         - jammy
         - noble
   galaxy_tags:
-    - kube_ps1
+    - kubeps1
     - kubernetes
     - k8s
     - zsh
