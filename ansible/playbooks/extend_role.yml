@@ -21,7 +21,7 @@
 
   pre_tasks:
     - name: Display custom configuration
-      debug:
+      ansible.builtin.debug:
         msg: |
           Custom Configuration:
           - Python version: {{ python_version }}
@@ -37,14 +37,14 @@
 
   tasks:
     - name: Install extra pip packages
-      pip:
+      ansible.builtin.pip:
         name: "{{ pip_extra_packages }}"
         state: present
         executable: /usr/bin/pip3
       tags: [python]
 
     - name: Install extra Go packages (using go install)
-      shell: |
+      ansible.builtin.shell: |
         source ~/.bashrc
         go install {{ item }}
       environment:
@@ -57,20 +57,21 @@
 
   post_tasks:
     - name: Verify installations
+      tags: [always]
       block:
         - name: Python version
-          shell: python3 --version
+          ansible.builtin.command: python3 --version
           register: py_version
           changed_when: false
 
         - name: Go version
-          shell: go version
+          ansible.builtin.command: go version
           register: go_version
           changed_when: false
 
-        - debug:
+        - name: Display versions
+          ansible.builtin.debug:
             msg: |
               Verification:
               {{ py_version.stdout }}
               {{ go_version.stdout }}
-      tags: [always]
