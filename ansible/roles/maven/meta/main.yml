@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: DevOps Team
+  namespace: devbox
+  role_name: maven
   description: Install Apache Maven build tool
   license: MIT
   min_ansible_version: "2.10"

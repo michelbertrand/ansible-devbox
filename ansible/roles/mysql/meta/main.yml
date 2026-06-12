@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: DevOps Team
+  namespace: devbox
+  role_name: mysql
   description: Install and configure MySQL database server (optional)
   license: MIT
   min_ansible_version: "2.10"
