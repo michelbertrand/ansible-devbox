@@ -24,6 +24,7 @@
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /root/.docker.gpg.asc
     mode: "0600"
+    checksum: "{{ docker_gpg_checksum }}"
   retries: 3
   delay: 5
   when: not docker_gpg_stat.stat.exists

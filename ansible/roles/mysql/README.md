@@ -4,7 +4,7 @@ Installs and configures MySQL database server (optional).
 
 ## Variables
 
-- `mysql_root_password`: Root password (default: "changeme")
+- `mysql_root_password`: Root password (default: `""` — must be set explicitly; role will fail if left empty)
 - `mysql_version`: MySQL version info (default: "8.0")
 
 ## Usage

@@ -131,7 +131,14 @@ make role-create  # Scaffold a new role (interactive)
 
 ### Configure Git Identity
 
-Edit `ansible/inventory/group_vars/local.yml`:
+Copy the example file and edit it (never commit `local.yml` — it is gitignored):
+
+```bash
+cp ansible/inventory/group_vars/local.yml.example \
+   ansible/inventory/group_vars/local.yml
+```
+
+Then set your identity in `local.yml`:
 
 ```yaml
 git_user_name: "Your Name"
@@ -146,10 +153,10 @@ make apply TAGS="git"
 
 ### Enable Optional Databases
 
-Edit `ansible/inventory/group_vars/local.yml`:
+Edit `ansible/inventory/group_vars/local.yml` (gitignored — do not commit):
 
 ```yaml
-# Enable MySQL — set a strong password, do not use the default
+# Enable MySQL — set a strong password here; never commit this file
 enable_mysql: true
 mysql_root_password: "your-secure-password"
 

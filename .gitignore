@@ -2,6 +2,26 @@
 *.retry
 .ansible/
 
+# Local machine overrides — copy local.yml.example to local.yml and customise.
+# Never commit local.yml: it may contain passwords and personal identifiers.
+ansible/inventory/group_vars/local.yml
+
+# Ansible Vault password files
+.vault_pass
+vault_pass.txt
+*.vault
+
+# Private keys and certificates
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Environment files
+.env
+
 # Python
 __pycache__/
 *.py[cod]
