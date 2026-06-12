@@ -31,10 +31,14 @@
     minikube_actual_version: "{{ minikube_version }}"
   when: minikube_version != "latest" and not minikube_stat.stat.exists
 
+- name: Set Minikube release base URL
+  ansible.builtin.set_fact:
+    minikube_release_base: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}"
+  when: not minikube_stat.stat.exists and minikube_actual_version is defined
+
 - name: Fetch Minikube checksum
   ansible.builtin.uri:
-    url: >-
-      https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}.sha256
+    url: "{{ minikube_release_base }}/minikube-linux-{{ minikube_arch }}.sha256"
     return_content: true
   register: minikube_checksum_file
   when: not minikube_stat.stat.exists and minikube_actual_version is defined
@@ -45,8 +49,7 @@
 
 - name: Download Minikube binary
   ansible.builtin.get_url:
-    url: >-
-      https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}
+    url: "{{ minikube_release_base }}/minikube-linux-{{ minikube_arch }}"
     dest: /usr/local/bin/minikube
     mode: "0755"
     checksum: "sha256:{{ minikube_checksum_file.get('content', '') | trim }}"

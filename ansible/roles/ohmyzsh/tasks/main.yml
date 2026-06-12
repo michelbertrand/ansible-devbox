@@ -1,70 +1,73 @@
 ---
-- name: Install zsh
+- name: Install zsh and git
   ansible.builtin.apt:
-    name: zsh
+    name:
+      - zsh
+      - git
     state: present
 
 - name: Get current non-root user
   ansible.builtin.set_fact:
-    target_user: "{{ ansible_user_id if ansible_user_id != 'root' else lookup('env', 'SUDO_USER') or 'root' }}"
+    ohmyzsh_target_user: "{{ ansible_user_id if ansible_user_id != 'root' else lookup('env', 'SUDO_USER') or 'root' }}"
 
 - name: Resolve target user home directory
   ansible.builtin.getent:
     database: passwd
-    key: "{{ target_user }}"
+    key: "{{ ohmyzsh_target_user }}"
 
 - name: Set target home directory
   ansible.builtin.set_fact:
-    target_home: "{{ ansible_facts.getent_passwd[target_user][4] }}"
+    ohmyzsh_target_home: "{{ ansible_facts.getent_passwd[ohmyzsh_target_user][4] }}"
 
 - name: Check if Oh My Zsh is installed
   ansible.builtin.stat:
-    path: "{{ target_home }}/.oh-my-zsh"
+    path: "{{ ohmyzsh_target_home }}/.oh-my-zsh"
   register: ohmyzsh_stat
 
 - name: Clone Oh My Zsh repository
   ansible.builtin.git:
     repo: "https://github.com/ohmyzsh/ohmyzsh.git"
-    dest: "{{ target_home }}/.oh-my-zsh"
+    dest: "{{ ohmyzsh_target_home }}/.oh-my-zsh"
     depth: 1
+    version: master
     update: false
   become: true
-  become_user: "{{ target_user }}"
+  become_user: "{{ ohmyzsh_target_user }}"
   when: not ohmyzsh_stat.stat.exists
 
 - name: Create .zshrc from Oh My Zsh template
   ansible.builtin.copy:
-    src: "{{ target_home }}/.oh-my-zsh/templates/zshrc.zsh-template"
-    dest: "{{ target_home }}/.zshrc"
+    src: "{{ ohmyzsh_target_home }}/.oh-my-zsh/templates/zshrc.zsh-template"
+    dest: "{{ ohmyzsh_target_home }}/.zshrc"
     remote_src: true
-    owner: "{{ target_user }}"
+    owner: "{{ ohmyzsh_target_user }}"
     mode: "0644"
     force: false
   when: not ohmyzsh_stat.stat.exists
 
 - name: Set zsh as default shell
   ansible.builtin.user:
-    name: "{{ target_user }}"
+    name: "{{ ohmyzsh_target_user }}"
     shell: /bin/zsh
 
 - name: Configure Oh My Zsh theme
   ansible.builtin.lineinfile:
-    path: "{{ target_home }}/.zshrc"
+    path: "{{ ohmyzsh_target_home }}/.zshrc"
     regexp: "^ZSH_THEME="
     line: "ZSH_THEME=\"{{ ohmyzsh_theme }}\""
     state: present
     create: true
     mode: "0644"
   become: true
-  become_user: "{{ target_user }}"
+  become_user: "{{ ohmyzsh_target_user }}"
 
 - name: Enable Oh My Zsh plugins
   ansible.builtin.lineinfile:
-    path: "{{ target_home }}/.zshrc"
+    path: "{{ ohmyzsh_target_home }}/.zshrc"
     regexp: "^plugins="
     line: "plugins=({{ ohmyzsh_plugins | join(' ') }})"
     state: present
     create: true
     mode: "0644"
   become: true
-  become_user: "{{ target_user }}"
+  become_user: "{{ ohmyzsh_target_user }}"

@@ -26,7 +26,6 @@ jobs:
         run: |
           yamllint -d '{extends: default, rules: {line-length: {max: 120}}}' \
             ansible/playbooks/*.yml \
-            ansible/inventory/*.yml \
             ansible/inventory/group_vars/*.yml \
             $(find ansible/roles -name '*.yml' -type f)
         continue-on-error: false

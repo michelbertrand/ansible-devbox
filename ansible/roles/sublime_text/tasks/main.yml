@@ -12,6 +12,8 @@
       -exec grep -l "download.sublimetext.com" {} \; \
       | xargs -r rm -f
     sed -i '/download.sublimetext.com/d' /etc/apt/sources.list
+  args:
+    executable: /bin/bash
   changed_when: false
 
 - name: Create apt keyrings directory
@@ -23,7 +25,7 @@
 - name: Check if Sublime Text GPG key is installed
   ansible.builtin.stat:
     path: /etc/apt/keyrings/sublime-text.gpg
-  register: sublime_gpg_stat
+  register: sublime_text_gpg_stat
 
 - name: Download Sublime Text GPG key
   ansible.builtin.get_url:
@@ -33,7 +35,7 @@
     checksum: "{{ sublime_text_gpg_checksum }}"
   retries: 3
   delay: 5
-  when: not sublime_gpg_stat.stat.exists
+  when: not sublime_text_gpg_stat.stat.exists
 
 - name: Verify Sublime Text GPG key fingerprint
   ansible.builtin.shell: |
@@ -48,14 +50,14 @@
   args:
     executable: /bin/bash
   changed_when: false
-  register: sublime_fp_check
-  failed_when: sublime_fp_check.rc != 0
-  when: not sublime_gpg_stat.stat.exists
+  register: sublime_text_fp_check
+  failed_when: sublime_text_fp_check.rc != 0
+  when: not sublime_text_gpg_stat.stat.exists
 
 - name: Dearmor Sublime Text GPG key
   ansible.builtin.command: >-
     gpg --batch --dearmor -o /etc/apt/keyrings/sublime-text.gpg /root/.sublimehq-pub.gpg.asc
-  when: not sublime_gpg_stat.stat.exists
+  when: not sublime_text_gpg_stat.stat.exists
   changed_when: true
 
 - name: Remove temporary Sublime Text GPG key
@@ -72,13 +74,10 @@
     filename: sublime-text
     update_cache: false
 
-- name: Update apt cache after adding repository
-  ansible.builtin.apt:
-    update_cache: true
-
 - name: Install Sublime Text
   ansible.builtin.apt:
     name: sublime-text
     state: "{{ sublime_text_version }}"
-  register: sublime_install
-  changed_when: sublime_install.changed
+    update_cache: true
+  register: sublime_text_install
+  changed_when: sublime_text_install.changed

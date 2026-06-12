@@ -18,10 +18,16 @@
     state: started
     enabled: true
 
+- name: Install Python MySQL client library
+  ansible.builtin.apt:
+    name: python3-pymysql
+    state: present
+
 - name: Set MySQL root password
   community.mysql.mysql_user:
     name: root
     password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     state: present
   when: mysql_root_password | length > 0
   no_log: true

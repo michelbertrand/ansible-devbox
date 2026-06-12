@@ -7,12 +7,12 @@
     - role: git
 
   post_tasks:
-    - name: Verify git installation
+    - name: Verify git installation  # noqa: command-instead-of-module
       ansible.builtin.command: git --version
       register: git_version
       changed_when: false
 
-    - name: Verify default branch config
+    - name: Verify default branch config  # noqa: command-instead-of-module
       ansible.builtin.command: git config --global init.defaultBranch
       register: git_default_branch_result
       changed_when: false

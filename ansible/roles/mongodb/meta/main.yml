@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: DevOps Team
+  namespace: devbox
+  role_name: mongodb
   description: Install and configure MongoDB database server (optional)
   license: MIT
   min_ansible_version: "2.10"

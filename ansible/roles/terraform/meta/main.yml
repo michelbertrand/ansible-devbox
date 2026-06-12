@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: DevOps Team
+  namespace: devbox
+  role_name: terraform
   description: Install Terraform infrastructure-as-code tool
   license: MIT
   min_ansible_version: "2.10"

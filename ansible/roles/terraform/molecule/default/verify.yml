@@ -6,11 +6,11 @@
     - name: Check terraform binary exists
       ansible.builtin.stat:
         path: /usr/local/bin/terraform
-      register: tf_bin
+      register: terraform_bin
 
     - name: Assert terraform is present
       ansible.builtin.assert:
-        that: tf_bin.stat.exists
+        that: terraform_bin.stat.exists
 
     - name: Run terraform version
       ansible.builtin.command: terraform version
