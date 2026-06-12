@@ -1,7 +1,9 @@
 ---
-- name: Install zsh
+- name: Install zsh and git
   ansible.builtin.apt:
-    name: zsh
+    name:
+      - zsh
+      - git
     state: present
 
 - name: Get current non-root user

@@ -12,6 +12,8 @@
       -exec grep -l "download.sublimetext.com" {} \; \
       | xargs -r rm -f
     sed -i '/download.sublimetext.com/d' /etc/apt/sources.list
+  args:
+    executable: /bin/bash
   changed_when: false
 
 - name: Create apt keyrings directory
@@ -71,13 +73,10 @@
     filename: sublime-text
     update_cache: false
 
-- name: Update apt cache after adding repository
-  ansible.builtin.apt:
-    update_cache: true
-
 - name: Install Sublime Text
   ansible.builtin.apt:
     name: sublime-text
     state: "{{ sublime_text_version }}"
+    update_cache: true
   register: sublime_text_install
   changed_when: sublime_text_install.changed

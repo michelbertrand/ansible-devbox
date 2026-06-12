@@ -1,19 +1,19 @@
 ---
 - name: Determine kubectl version when set to 'latest'
-  ansible.builtin.shell: |
-    set -o pipefail
-    curl -s https://dl.k8s.io/release/stable.txt | tr -d '\n'
+  ansible.builtin.uri:
+    url: https://dl.k8s.io/release/stable.txt
+    return_content: true
   register: kubectl_version_file
   when: kubectl_version == "latest"
   retries: 3
   delay: 5
-  until: kubectl_version_file.stdout | length > 0
+  until: kubectl_version_file.status == 200
   changed_when: false
   check_mode: false
 
 - name: Set kubectl_actual_version to latest
   ansible.builtin.set_fact:
-    kubectl_actual_version: "{{ kubectl_version_file.stdout }}"
+    kubectl_actual_version: "{{ kubectl_version_file.content | trim }}"
   when: kubectl_version == "latest"
 
 - name: Set kubectl to requested version
