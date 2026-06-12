@@ -19,8 +19,8 @@
     - name: Check .zshrc exists
       ansible.builtin.stat:
         path: "{{ ansible_user_dir }}/.zshrc"
-      register: zshrc
+      register: ohmyzsh_zshrc
 
     - name: Assert .zshrc is present
       ansible.builtin.assert:
-        that: zshrc.stat.exists
+        that: ohmyzsh_zshrc.stat.exists

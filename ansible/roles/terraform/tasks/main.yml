@@ -21,7 +21,7 @@
     dest: "/tmp/{{ terraform_release_file }}"
     checksum: "{{ terraform_checksums[terraform_arch] }}"
     mode: "0644"
-  register: tf_download
+  register: terraform_download
   when: not terraform_stat.stat.exists
   retries: 3
   delay: 5
@@ -41,7 +41,7 @@
     src: "/tmp/{{ terraform_release_file }}"
     dest: "/usr/local/bin/"
     remote_src: true
-  when: terraform_zip.stat.exists and (tf_download is changed or not terraform_stat.stat.exists)
+  when: terraform_zip.stat.exists and (terraform_download is changed or not terraform_stat.stat.exists)
 
 - name: Verify Terraform installation
   ansible.builtin.command: terraform version

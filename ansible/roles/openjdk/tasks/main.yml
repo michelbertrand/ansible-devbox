@@ -8,6 +8,6 @@
 
 - name: Verify Java installation
   ansible.builtin.command: java -version
-  register: java_version
+  register: openjdk_java_version
   changed_when: false
-  failed_when: java_version.rc != 0
+  failed_when: openjdk_java_version.rc != 0

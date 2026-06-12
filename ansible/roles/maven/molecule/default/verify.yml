@@ -6,11 +6,11 @@
     - name: Check mvn binary exists
       ansible.builtin.stat:
         path: /usr/bin/mvn
-      register: mvn_bin
+      register: maven_mvn_bin
 
     - name: Assert mvn is installed
       ansible.builtin.assert:
-        that: mvn_bin.stat.exists
+        that: maven_mvn_bin.stat.exists
 
     - name: Run mvn version
       ansible.builtin.command: mvn -version
