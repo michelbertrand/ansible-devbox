@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: DevOps Team
+  namespace: devbox
+  role_name: kubectl
   description: Install kubectl Kubernetes command-line tool
   license: MIT
   min_ansible_version: "2.10"

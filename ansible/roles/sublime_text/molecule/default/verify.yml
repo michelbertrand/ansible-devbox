@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - name: Check sublime-text package is installed
-      command: dpkg -s sublime-text
+      ansible.builtin.command: dpkg -s sublime-text
       changed_when: false

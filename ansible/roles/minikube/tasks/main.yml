@@ -1,16 +1,16 @@
 ---
 - name: Install Docker (required for Minikube)
-  apt:
+  ansible.builtin.apt:
     name: docker.io
     state: present
 
 - name: Check if Minikube binary exists
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/minikube
   register: minikube_stat
 
 - name: Resolve latest Minikube version from GitHub
-  uri:
+  ansible.builtin.uri:
     url: https://api.github.com/repos/kubernetes/minikube/releases/latest
     return_content: true
   register: minikube_latest_release
@@ -18,44 +18,50 @@
   retries: 3
   delay: 5
   until: minikube_latest_release.status == 200
-  check_mode: no
+  check_mode: false
 
 - name: Set minikube_actual_version (latest)
-  set_fact:
-    minikube_actual_version: "{{ minikube_latest_release.get('json', {}).get('tag_name', '') | regex_replace('^v', '') }}"
+  ansible.builtin.set_fact:
+    minikube_actual_version: >-
+      {{ minikube_latest_release.get('json', {}).get('tag_name', '') | regex_replace('^v', '') }}
   when: minikube_version == "latest" and not minikube_stat.stat.exists
 
 - name: Set minikube_actual_version (pinned)
-  set_fact:
+  ansible.builtin.set_fact:
     minikube_actual_version: "{{ minikube_version }}"
   when: minikube_version != "latest" and not minikube_stat.stat.exists
 
+- name: Set Minikube release base URL
+  ansible.builtin.set_fact:
+    minikube_release_base: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}"
+  when: not minikube_stat.stat.exists and minikube_actual_version is defined
+
 - name: Fetch Minikube checksum
-  uri:
-    url: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}.sha256"
+  ansible.builtin.uri:
+    url: "{{ minikube_release_base }}/minikube-linux-{{ minikube_arch }}.sha256"
     return_content: true
   register: minikube_checksum_file
   when: not minikube_stat.stat.exists and minikube_actual_version is defined
   retries: 3
   delay: 5
   until: minikube_checksum_file.status == 200
-  check_mode: no
+  check_mode: false
 
 - name: Download Minikube binary
-  get_url:
-    url: "https://github.com/kubernetes/minikube/releases/download/v{{ minikube_actual_version }}/minikube-linux-{{ minikube_arch }}"
+  ansible.builtin.get_url:
+    url: "{{ minikube_release_base }}/minikube-linux-{{ minikube_arch }}"
     dest: /usr/local/bin/minikube
     mode: "0755"
     checksum: "sha256:{{ minikube_checksum_file.get('content', '') | trim }}"
   when: not minikube_stat.stat.exists and minikube_actual_version is defined
 
 - name: Verify Minikube installation
-  command: minikube version
+  ansible.builtin.command: minikube version
   register: minikube_version_cmd
   changed_when: false
 
 - name: Add user to docker group (for Minikube)
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     groups: docker
     append: true

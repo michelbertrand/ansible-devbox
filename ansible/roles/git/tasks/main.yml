@@ -1,6 +1,6 @@
 ---
 - name: Install git packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ git_packages }}"
     state: present
     update_cache: true

@@ -1,6 +1,6 @@
 ---
 - name: Fail when MySQL is enabled without a root password
-  fail:
+  ansible.builtin.fail:
     msg: >
       mysql_root_password must be set before enabling MySQL.
       Set it in ansible/inventory/group_vars/local.yml.
@@ -8,26 +8,32 @@
   when: mysql_root_password | length == 0
 
 - name: Install MySQL server
-  apt:
+  ansible.builtin.apt:
     name: mysql-server
     state: present
 
 - name: Start MySQL service
-  systemd:
+  ansible.builtin.systemd:
     name: mysql
     state: started
     enabled: true
 
+- name: Install Python MySQL client library
+  ansible.builtin.apt:
+    name: python3-pymysql
+    state: present
+
 - name: Set MySQL root password
-  mysql_user:
+  community.mysql.mysql_user:
     name: root
     password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     state: present
   when: mysql_root_password | length > 0
   no_log: true
 
 - name: Create .my.cnf for root user
-  template:
+  ansible.builtin.template:
     src: my.cnf.j2
     dest: "{{ ansible_user_dir }}/.my.cnf"
     mode: "0600"
@@ -36,6 +42,6 @@
   no_log: true
 
 - name: Verify MySQL installation
-  command: mysql --version
+  ansible.builtin.command: mysql --version
   register: mysql_version_cmd
   changed_when: false

@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - name: Check terminator package is installed
-      command: dpkg -s terminator
+      ansible.builtin.command: dpkg -s terminator
       changed_when: false

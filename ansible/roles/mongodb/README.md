@@ -4,7 +4,7 @@ Installs and configures MongoDB database server (optional).
 
 ## Variables
 
-- `mongodb_version`: MongoDB version (default: "6.0")
+- `mongodb_version`: MongoDB version (default: "8.0")
 
 ## Usage
 

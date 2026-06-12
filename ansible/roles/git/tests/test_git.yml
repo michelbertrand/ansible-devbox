@@ -7,19 +7,20 @@
     - role: git
 
   post_tasks:
-    - name: Verify git installation
-      command: git --version
+    - name: Verify git installation  # noqa: command-instead-of-module
+      ansible.builtin.command: git --version
       register: git_version
       changed_when: false
 
-    - name: Verify default branch config
-      command: git config --global init.defaultBranch
+    - name: Verify default branch config  # noqa: command-instead-of-module
+      ansible.builtin.command: git config --global init.defaultBranch
       register: git_default_branch_result
       changed_when: false
       become: false
 
-    - debug:
+    - name: Display git version info
+      ansible.builtin.debug:
         msg: |
-          ✓ Git installed
+          Git installed
           {{ git_version.stdout }}
           default branch: {{ git_default_branch_result.stdout }}

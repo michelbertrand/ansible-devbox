@@ -1,0 +1,14 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  tasks:
+    - name: Recreate man directories stripped from the minimized test image
+      # The geerlingguy test image excludes /usr/share/man, which breaks the
+      # JDK post-install update-alternatives man-page symlink. Not needed on a
+      # real workstation, so this lives in the scenario, not the role.
+      ansible.builtin.file:
+        path: "/usr/share/man/man{{ item }}"
+        state: directory
+        mode: "0755"
+      loop: [1, 2, 3, 4, 5, 6, 7, 8]

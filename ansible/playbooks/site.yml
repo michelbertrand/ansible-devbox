@@ -6,11 +6,12 @@
 
   pre_tasks:
     - name: Display provisioning info
-      debug:
+      ansible.builtin.debug:
         msg: "Provisioning {{ ansible_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
 
     - name: Remove conflicting Sublime Text apt sources (legacy install cleanup)
-      shell: |
+      ansible.builtin.shell: |
+        set -o pipefail
         find /etc/apt/sources.list.d/ \( -name "*.list" -o -name "*.sources" \) \
           -exec grep -l "download.sublimetext.com" {} \; \
           | xargs -r rm -f
@@ -20,7 +21,7 @@
       check_mode: false
 
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         cache_valid_time: 3600
         update_cache: true
 
@@ -65,7 +66,7 @@
       tags: [minikube, kubernetes]
 
     - role: kube_ps1
-      tags: [kube_ps1, kubernetes]
+      tags: [kubeps1, kubernetes]
 
     - role: mysql
       when: enable_mysql | default(false)
@@ -77,5 +78,5 @@
 
   post_tasks:
     - name: Summary
-      debug:
-        msg: "✓ Provisioning complete. Run 'make apply' again to verify idempotency."
+      ansible.builtin.debug:
+        msg: "Provisioning complete. Run 'make apply' again to verify idempotency."
