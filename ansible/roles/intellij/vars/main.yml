@@ -1,0 +1,9 @@
+---
+# IntelliJ IDEA role variables (internal)
+intellij_download_url_base: "https://download.jetbrains.com/idea"
+
+# SHA-256 of idea-{{ intellij_version }}[-aarch64].tar.gz — update alongside intellij_version/intellij_build bumps.
+# Source: https://download.jetbrains.com/idea/idea-{{ intellij_version }}[-aarch64].tar.gz.sha256
+intellij_checksums:
+  amd64: "sha256:13f4174ba16c1cef04871cb261433536d002586c269a809392c20ee3f94959f5"
+  arm64: "sha256:07c83a9d219fa8945b6accb7f3284658553e5c812053a97621b8f84bc031e57"

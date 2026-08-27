@@ -1,0 +1,14 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check IntelliJ IDEA launcher exists
+      ansible.builtin.stat:
+        path: /opt/idea/bin/idea.sh
+      register: intellij_verify_launcher
+      failed_when: not intellij_verify_launcher.stat.exists or not intellij_verify_launcher.stat.executable
+
+    - name: Check IntelliJ IDEA CLI symlink exists
+      ansible.builtin.command: test -L /usr/local/bin/idea
+      changed_when: false

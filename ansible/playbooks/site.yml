@@ -32,6 +32,9 @@
     - role: sublime_text
       tags: [sublime_text, editors]
 
+    - role: intellij
+      tags: [intellij, editors]
+
     - role: terminator
       tags: [terminator, terminals]
 

@@ -9,7 +9,7 @@ New machine? Fresh VM? This repo provisions everything you need — editors, run
 | Category        | Tools                                             |
 |-----------------|---------------------------------------------------|
 | Shell           | zsh, Oh My Zsh, kube-ps1                         |
-| Editors         | Sublime Text                                      |
+| Editors         | Sublime Text, IntelliJ IDEA                       |
 | Terminals       | Terminator                                        |
 | Runtimes        | Python, Go, OpenJDK                               |
 | Build tools     | Maven, Gradle                                     |
@@ -27,7 +27,7 @@ This repository provides a modular, idempotent Ansible framework for provisionin
 ## Features
 
 - **Idempotent roles**: Run playbooks multiple times with no side effects
-- **Per-tool roles**: Git, Sublime Text, Terminator, Python, Go, OpenJDK, Maven, Gradle, Terraform, kubectl, Minikube, Docker, Oh My Zsh
+- **Per-tool roles**: Git, Sublime Text, IntelliJ IDEA, Terminator, Python, Go, OpenJDK, Maven, Gradle, Terraform, kubectl, Minikube, Docker, Oh My Zsh
 - **Optional databases**: MySQL and MongoDB configurable via group variables
 - **CI/CD ready**: GitHub Actions linting, syntax checking, and dry-run testing
 - **Comprehensive documentation**: SDD, git-spec, and per-role READMEs
@@ -108,6 +108,7 @@ make role-create  # Scaffold a new role (interactive)
 │   └── roles/
 │       ├── git/
 │       ├── sublime_text/
+│       ├── intellij/
 │       ├── terminator/
 │       ├── ohmyzsh/
 │       ├── python/
@@ -239,14 +240,13 @@ ansible-playbook ansible/playbooks/site.yml \
 
 ## CI/CD
 
-The `.github/workflows/ci.yml` runs on push/PR with four sequential stages:
+The `.github/workflows/ci.yml` runs on push/PR with three sequential stages:
 
 1. **Linting** — `ansible-lint` + `yamllint`
 2. **Syntax check** — `ansible-playbook --syntax-check`
-3. **Molecule tests** — all 16 roles run in parallel Docker containers (converge + verify)
-4. **Dry-run** — `ansible-playbook --check` against the local inventory (non-blocking)
+3. **Dry-run** — `ansible-playbook --check` against the local inventory (non-blocking)
 
-Molecule jobs run in parallel using a matrix strategy; a single role failure does not cancel the others (`fail-fast: false`). Address linter or molecule failures before merging.
+Molecule scenarios are not run in CI, but every role still ships one under `molecule/default/` — run it locally before merging (see [Testing Roles](#testing-roles)).
 
 ## Security
 
@@ -260,7 +260,7 @@ terraform_version: "1.9.0"
 terraform_checksum: "sha256:<hash>"
 ```
 
-Roles affected: `terraform`, `kubectl`, `minikube`.
+Roles affected: `terraform`, `kubectl`, `minikube`, `intellij`.
 
 ### Package Source Verification (NFR-3.5.2)
 

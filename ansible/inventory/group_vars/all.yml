@@ -15,6 +15,7 @@ kubectl_version: "latest"
 minikube_version: "latest"
 maven_version: "3.9.0"
 gradle_version: "8.0"
+intellij_version: "2025.3"
 
 # Shell configuration
 ohmyzsh_theme: "robbyrussell"
