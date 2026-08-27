@@ -29,7 +29,7 @@ This repository provides a modular, idempotent Ansible framework for provisionin
 - **Idempotent roles**: Run playbooks multiple times with no side effects
 - **Per-tool roles**: Git, Sublime Text, IntelliJ IDEA, Terminator, Python, Go, OpenJDK, Maven, Gradle, Terraform, kubectl, Minikube, Docker, Oh My Zsh
 - **Optional databases**: MySQL and MongoDB configurable via group variables
-- **CI/CD ready**: GitHub Actions linting, syntax checking, and dry-run testing
+- **CI/CD ready**: GitHub Actions linting and syntax checking
 - **Comprehensive documentation**: SDD, git-spec, and per-role READMEs
 - **Testing framework**: Per-role test playbooks under `tests/`
 
@@ -240,11 +240,10 @@ ansible-playbook ansible/playbooks/site.yml \
 
 ## CI/CD
 
-The `.github/workflows/ci.yml` runs on push/PR with three sequential stages:
+The `.github/workflows/ci.yml` runs on push/PR with two sequential stages:
 
 1. **Linting** — `ansible-lint` + `yamllint`
 2. **Syntax check** — `ansible-playbook --syntax-check`
-3. **Dry-run** — `ansible-playbook --check` against the local inventory (non-blocking)
 
 Molecule scenarios are not run in CI, but every role still ships one under `molecule/default/` — run it locally before merging (see [Testing Roles](#testing-roles)).
 
