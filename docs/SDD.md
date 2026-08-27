@@ -17,7 +17,7 @@
 
 ### Functional
 
-1. Install and configure 11 development tools (sublime_text, terminator, python, go, openjdk, maven, gradle, terraform, kubectl, minikube, ohmyzsh)
+1. Install and configure 12 development tools (sublime_text, intellij, terminator, python, go, openjdk, maven, gradle, terraform, kubectl, minikube, ohmyzsh)
 2. Support optional database roles (MySQL, MongoDB) via group variables
 3. Enable/disable tools via Ansible tags
 4. Provide inventory for local Ubuntu machines (connection: local)
@@ -81,6 +81,7 @@ site.yml
 ├── Pre-tasks (update cache if needed)
 ├── Roles (by tag)
 │   ├── role: sublime_text (tag: sublime_text)
+│   ├── role: intellij (tag: intellij)
 │   ├── role: terminator (tag: terminator)
 │   ├── role: python (tag: python)
 │   ├── role: go (tag: go)

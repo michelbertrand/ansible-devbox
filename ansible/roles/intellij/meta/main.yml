@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: DevOps Team
+  namespace: devbox
+  role_name: intellij
+  description: Install IntelliJ IDEA
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+  galaxy_tags:
+    - editor
+    - development
+    - ide
+    - jvm
+
+dependencies: []

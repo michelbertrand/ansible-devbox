@@ -1,0 +1,5 @@
+---
+# IntelliJ IDEA role defaults
+intellij_version: "2025.3"
+intellij_build: "253.28294.334"  # must match intellij_version; see README for how to bump
+intellij_install_root: "/opt"

@@ -1,0 +1,17 @@
+---
+- name: Test IntelliJ IDEA Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: intellij
+
+  post_tasks:
+    - name: Verify IntelliJ IDEA CLI symlink
+      ansible.builtin.command: which idea
+      register: intellij_which_path
+      changed_when: false
+
+    - name: Display IntelliJ IDEA install path
+      ansible.builtin.debug:
+        msg: "IntelliJ IDEA installed at {{ intellij_which_path.stdout }}"
