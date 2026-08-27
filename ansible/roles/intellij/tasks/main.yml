@@ -1,0 +1,69 @@
+---
+- name: Map architecture to JetBrains download naming convention
+  ansible.builtin.set_fact:
+    intellij_arch: >-
+      {{ 'amd64' if ansible_facts['architecture'] == 'x86_64'
+         else 'arm64' if ansible_facts['architecture'] == 'aarch64'
+         else ansible_facts['architecture'] }}
+
+- name: Set IntelliJ IDEA release facts
+  ansible.builtin.set_fact:
+    intellij_release_file: >-
+      {{ 'idea-' + intellij_version + '.tar.gz' if intellij_arch == 'amd64'
+         else 'idea-' + intellij_version + '-aarch64.tar.gz' }}
+    intellij_extracted_dir: "idea-IU-{{ intellij_build }}"
+
+- name: Check if IntelliJ IDEA is already installed
+  ansible.builtin.stat:
+    path: "{{ intellij_install_root }}/{{ intellij_extracted_dir }}"
+  register: intellij_stat
+
+- name: Download IntelliJ IDEA
+  ansible.builtin.get_url:
+    url: "{{ intellij_download_url_base }}/{{ intellij_release_file }}"
+    dest: "/tmp/{{ intellij_release_file }}"
+    checksum: "{{ intellij_checksums[intellij_arch] }}"
+    mode: "0644"
+  register: intellij_download
+  when: not intellij_stat.stat.exists
+  retries: 3
+  delay: 5
+
+- name: Check if downloaded archive exists
+  ansible.builtin.stat:
+    path: "/tmp/{{ intellij_release_file }}"
+  register: intellij_archive
+
+- name: Extract IntelliJ IDEA
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ intellij_release_file }}"
+    dest: "{{ intellij_install_root }}/"
+    remote_src: true
+  when: intellij_archive.stat.exists and (intellij_download is changed or not intellij_stat.stat.exists)
+
+- name: Create IntelliJ IDEA symlink
+  ansible.builtin.file:
+    src: "{{ intellij_install_root }}/{{ intellij_extracted_dir }}"
+    dest: "{{ intellij_install_root }}/idea"
+    state: link
+    force: true
+
+- name: Symlink IntelliJ IDEA CLI launcher
+  ansible.builtin.file:
+    src: "{{ intellij_install_root }}/idea/bin/idea.sh"
+    dest: /usr/local/bin/idea
+    state: link
+    force: true
+
+- name: Install IntelliJ IDEA desktop entry
+  ansible.builtin.template:
+    src: idea.desktop.j2
+    dest: /usr/share/applications/idea.desktop
+    mode: "0644"
+
+- name: Verify IntelliJ IDEA launcher is executable
+  ansible.builtin.stat:
+    path: "{{ intellij_install_root }}/idea/bin/idea.sh"
+  register: intellij_launcher
+  when: not ansible_check_mode
+  failed_when: not intellij_launcher.stat.exists or not intellij_launcher.stat.executable
