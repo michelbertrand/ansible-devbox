@@ -65,4 +65,5 @@
   ansible.builtin.stat:
     path: "{{ intellij_install_root }}/idea/bin/idea.sh"
   register: intellij_launcher
+  when: not ansible_check_mode
   failed_when: not intellij_launcher.stat.exists or not intellij_launcher.stat.executable
