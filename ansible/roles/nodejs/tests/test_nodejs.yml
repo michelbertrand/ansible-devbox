@@ -1,0 +1,17 @@
+---
+- name: Test Node.js Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: nodejs
+
+  post_tasks:
+    - name: Verify node version
+      ansible.builtin.command: node --version
+      register: nodejs_version_cmd
+      changed_when: false
+
+    - name: Display Node.js version
+      ansible.builtin.debug:
+        msg: "Node.js installed: {{ nodejs_version_cmd.stdout }}"

@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check node binary exists
+      ansible.builtin.command: node --version
+      changed_when: false
+
+    - name: Check npm binary exists
+      ansible.builtin.command: npm --version
+      changed_when: false
