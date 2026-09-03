@@ -17,6 +17,8 @@
           | xargs -r rm -f
         sed -i '/download.sublimetext.com/d' /etc/apt/sources.list
         rm -f /usr/share/keyrings/sublimehq.gpg
+      args:
+        executable: /bin/bash
       changed_when: false
       check_mode: false
 
