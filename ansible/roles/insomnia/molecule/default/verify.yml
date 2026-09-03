@@ -1,0 +1,10 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check Insomnia binary exists
+      ansible.builtin.stat:
+        path: /usr/bin/insomnia
+      register: insomnia_verify_binary
+      failed_when: not insomnia_verify_binary.stat.exists or not insomnia_verify_binary.stat.executable

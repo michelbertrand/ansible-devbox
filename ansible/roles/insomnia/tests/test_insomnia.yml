@@ -1,0 +1,17 @@
+---
+- name: Test Insomnia Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: insomnia
+
+  post_tasks:
+    - name: Verify Insomnia CLI path
+      ansible.builtin.command: which insomnia
+      register: insomnia_which_path
+      changed_when: false
+
+    - name: Display Insomnia install path
+      ansible.builtin.debug:
+        msg: "Insomnia installed at {{ insomnia_which_path.stdout }}"

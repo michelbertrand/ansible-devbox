@@ -35,6 +35,9 @@
     - role: intellij
       tags: [intellij, editors]
 
+    - role: insomnia
+      tags: [insomnia, tools]
+
     - role: terminator
       tags: [terminator, terminals]
 
