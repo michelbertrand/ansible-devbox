@@ -1,0 +1,13 @@
+---
+- name: Install Claude Code
+  community.general.npm:
+    name: "{{ claude_code_package_name }}"
+    version: "{{ claude_code_version }}"
+    global: true
+    state: present
+  when: not ansible_check_mode
+
+- name: Verify Claude Code installation
+  ansible.builtin.command: claude --version
+  changed_when: false
+  when: not ansible_check_mode

@@ -1,0 +1,17 @@
+---
+- name: Test Claude Code Role
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: claude_code
+
+  post_tasks:
+    - name: Verify Claude Code CLI path
+      ansible.builtin.command: which claude
+      register: claude_code_which_path
+      changed_when: false
+
+    - name: Display Claude Code install path
+      ansible.builtin.debug:
+        msg: "Claude Code installed at {{ claude_code_which_path.stdout }}"

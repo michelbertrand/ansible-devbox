@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: DevOps Team
+  namespace: devbox
+  role_name: nodejs
+  description: Install Node.js and npm from the NodeSource apt repository
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+  galaxy_tags:
+    - nodejs
+    - npm
+    - languages
+
+dependencies: []

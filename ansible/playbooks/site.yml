@@ -52,6 +52,12 @@
     - role: go
       tags: [go, languages]
 
+    - role: nodejs
+      tags: [nodejs, languages]
+
+    - role: claude_code
+      tags: [claude_code, tools]
+
     - role: openjdk
       tags: [openjdk, jvm]
 

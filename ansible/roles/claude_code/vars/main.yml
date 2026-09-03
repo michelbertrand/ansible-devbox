@@ -1,0 +1,3 @@
+---
+# Claude Code role variables (internal)
+claude_code_package_name: "@anthropic-ai/claude-code"
