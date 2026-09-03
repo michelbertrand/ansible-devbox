@@ -1,0 +1,3 @@
+---
+# Node.js role defaults
+nodejs_version: "22"

@@ -1,0 +1,74 @@
+---
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Check if NodeSource GPG key is installed
+  ansible.builtin.stat:
+    path: /etc/apt/keyrings/nodesource.gpg
+  register: nodejs_gpg_stat
+
+- name: Download NodeSource GPG key
+  ansible.builtin.get_url:
+    url: "{{ nodejs_gpg_key_url }}"
+    dest: /root/.nodesource.gpg.asc
+    mode: "0600"
+    checksum: "{{ nodejs_gpg_checksum }}"
+  retries: 3
+  delay: 5
+  when: not nodejs_gpg_stat.stat.exists
+
+- name: Verify NodeSource GPG key fingerprint
+  ansible.builtin.shell: |
+    set -o pipefail
+    tmpring=$(mktemp)
+    gpg --no-default-keyring --keyring "${tmpring}" \
+        --import /root/.nodesource.gpg.asc 2>/dev/null
+    result=$(gpg --no-default-keyring --keyring "${tmpring}" \
+        --fingerprint 2>/dev/null | tr -d ' ')
+    rm -f "${tmpring}" "${tmpring}~"
+    echo "${result}" | grep -qF "{{ nodejs_gpg_fingerprint | replace(' ', '') }}"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: nodejs_fp_check
+  failed_when: nodejs_fp_check.rc != 0
+  when: not nodejs_gpg_stat.stat.exists
+
+- name: Dearmor NodeSource GPG key
+  ansible.builtin.command: gpg --batch --dearmor -o /etc/apt/keyrings/nodesource.gpg /root/.nodesource.gpg.asc
+  when: not nodejs_gpg_stat.stat.exists
+  changed_when: true
+
+- name: Remove temporary NodeSource GPG key
+  ansible.builtin.file:
+    path: /root/.nodesource.gpg.asc
+    state: absent
+
+- name: Add NodeSource repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/nodesource.gpg]
+      https://deb.nodesource.com/node_{{ nodejs_version }}.x nodistro main
+    state: present
+    filename: nodesource
+    update_cache: false
+
+- name: Install Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true
+  when: not ansible_check_mode
+
+- name: Verify Node.js installation
+  ansible.builtin.command: node --version
+  changed_when: false
+  when: not ansible_check_mode
+
+- name: Verify npm installation
+  ansible.builtin.command: npm --version
+  changed_when: false
+  when: not ansible_check_mode
