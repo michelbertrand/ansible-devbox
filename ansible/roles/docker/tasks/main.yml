@@ -64,6 +64,7 @@
     state: present
 
 - name: Install Docker packages
+  when: not ansible_check_mode
   block:
     - name: Install Docker with optional plugins
       ansible.builtin.apt:
@@ -91,17 +92,21 @@
     state: started
     enabled: true
     daemon_reload: true
+  when: not ansible_check_mode
 
 - name: Add user to docker group
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     groups: docker
     append: true
+  when: not ansible_check_mode
 
 - name: Verify Docker installation
   ansible.builtin.command: docker --version
   changed_when: false
+  when: not ansible_check_mode
 
 - name: Verify Docker Compose installation
   ansible.builtin.command: docker compose version
   changed_when: false
+  when: not ansible_check_mode

@@ -1,0 +1,45 @@
+---
+- name: Verify architecture is supported by upstream Insomnia releases
+  ansible.builtin.assert:
+    that: ansible_facts['architecture'] == 'x86_64'
+    fail_msg: >-
+      Insomnia does not publish official Linux packages for
+      {{ ansible_facts['architecture'] }}; only x86_64 is supported.
+    success_msg: "Architecture {{ ansible_facts['architecture'] }} is supported."
+
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Set installed Insomnia version fact
+  ansible.builtin.set_fact:
+    insomnia_installed_version: >-
+      {{ ansible_facts.packages['insomnia'][0].version
+         if 'insomnia' in ansible_facts.packages else '' }}
+
+- name: Download Insomnia package
+  ansible.builtin.get_url:
+    url: "{{ insomnia_download_url_base }}/core%40{{ insomnia_version }}/Insomnia.Core-{{ insomnia_version }}.deb"
+    dest: "/tmp/Insomnia.Core-{{ insomnia_version }}.deb"
+    checksum: "sha256:{{ insomnia_checksum }}"
+    mode: "0644"
+  when: insomnia_installed_version != insomnia_version
+  retries: 3
+  delay: 5
+
+- name: Check if downloaded package exists
+  ansible.builtin.stat:
+    path: "/tmp/Insomnia.Core-{{ insomnia_version }}.deb"
+  register: insomnia_package
+
+- name: Install Insomnia
+  ansible.builtin.apt:
+    deb: "/tmp/Insomnia.Core-{{ insomnia_version }}.deb"
+  when: insomnia_installed_version != insomnia_version and insomnia_package.stat.exists
+
+- name: Verify Insomnia binary is executable
+  ansible.builtin.stat:
+    path: /usr/bin/insomnia
+  register: insomnia_binary
+  when: not ansible_check_mode
+  failed_when: not insomnia_binary.stat.exists or not insomnia_binary.stat.executable
