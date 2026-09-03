@@ -1,0 +1,7 @@
+---
+# Insomnia role variables (internal)
+insomnia_download_url_base: "https://github.com/Kong/insomnia/releases/download"
+
+# SHA-256 of Insomnia.Core-{{ insomnia_version }}.deb — update alongside insomnia_version bumps.
+# Source: sha256 subject digest in the release's insomnia-provenance.intoto.jsonl attestation.
+insomnia_checksum: "176fdd5306fb0cd8c74195cc9ee7b5da4d390a909ffeb8b1e41681667e914a61"

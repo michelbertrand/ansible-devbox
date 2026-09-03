@@ -81,3 +81,4 @@
     update_cache: true
   register: sublime_text_install
   changed_when: sublime_text_install.changed
+  when: not ansible_check_mode

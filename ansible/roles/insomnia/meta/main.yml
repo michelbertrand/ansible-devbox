@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: DevOps Team
+  namespace: devbox
+  role_name: insomnia
+  description: Install Insomnia Essentials (free-tier API client)
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+  galaxy_tags:
+    - api
+    - development
+    - tools
+
+dependencies: []
